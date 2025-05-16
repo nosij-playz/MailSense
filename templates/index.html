@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Classifier</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            margin: auto;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        textarea, input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: #f0f0f0;
+            font-size: 16px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+            font-size: 18px;
+        }
+    </style>
+    <script>
+        async function classifyEmail(event) {
+            event.preventDefault();
+            const emailText = document.getElementById("email_text").value;
+            const hasAttachment = document.getElementById("has_attachment").checked;
+            const attachmentFormat = document.getElementById("attachment_format").value;
+            const senderEmail = document.getElementById("sender_email").value;
+            
+            const response = await fetch("/classify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email_text: emailText,
+                    has_attachment: hasAttachment,
+                    attachment_format: attachmentFormat,
+                    sender_email: senderEmail
+                })
+            });
+            
+            const result = await response.json();
+            document.getElementById("result").innerText = "Predicted Category: " + result.predicted_category;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2 style="color: #333;">📧 Email Classifier</h2>
+        <form onsubmit="classifyEmail(event)">
+            <label>Email Text:</label><br>
+            <textarea id="email_text" rows="4"></textarea><br>
+            
+            <label>Has Attachment:</label>
+            <input type="checkbox" id="has_attachment"><br>
+            
+            <label>Attachment Format:</label>
+            <input type="text" id="attachment_format" placeholder="e.g., pdf, exe, docx"><br>
+            
+            <label>Sender Email:</label>
+            <input type="email" id="sender_email" placeholder="example@domain.com"><br>
+            
+            <button type="submit">🚀 Classify Email</button>
+        </form>
+        
+        <h3 id="result"></h3>
+    </div>
+</body>
+</html>
